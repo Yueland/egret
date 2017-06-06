@@ -2,20 +2,34 @@ class R {
     public static getBMP(value: string, obj?: any): egret.Bitmap {
         let bmp = new egret.Bitmap(RES.getRes(value));
         if (obj) {
-            for (var i in obj) {
-                bmp[i] = obj[i];
+            if (obj instanceof Array) {
+                bmp.x = obj[0];
+                bmp.y = obj[1];
+            } else {
+                for (var i in obj) {
+                    bmp[i] = obj[i];
+                }
             }
         }
         return bmp;
     }
 
-    public static getCBMP(value: string, obj?: any): egret.Bitmap {
+    public static getCBMP(value: string, obj?: any, isRound = false): egret.Bitmap {
         let bmp = this.getBMP(value);
-        bmp.anchorOffsetX = bmp.width / 2;
-        bmp.anchorOffsetY = bmp.height / 2;
+        bmp.anchorOffsetX = isRound ? Math.round(bmp.width / 2) : bmp.width / 2;
+        bmp.anchorOffsetY = isRound ? Math.round(bmp.height / 2) : bmp.height / 2;
         if (obj) {
-            for (var i in obj) {
-                bmp[i] = obj[i];
+            if (obj instanceof Array) {
+                if (!!obj[0] && !isNaN(obj[0])) {
+                    bmp.x = Number(obj[0]);
+                }
+                if (!!obj[1] && !isNaN(obj[1])) {
+                    bmp.y = Number(obj[1]);
+                }
+            } else {
+                for (var i in obj) {
+                    bmp[i] = obj[i];
+                }
             }
         }
         return bmp;

@@ -10,6 +10,7 @@ module vincent.display {
 
         private playing: boolean = false;
 
+        public id: number;
         public loop: boolean = true;
         public autoPlay: boolean = true;
         public wait: number = 0;
@@ -36,6 +37,12 @@ module vincent.display {
         public gotoAndPlay(value: number): void
         {
             this.cid = value;
+        }
+
+        public gotoAndStop(value: number): void {
+            this.cid = value;
+            this.render();
+            this.stop();
         }
 
         public setScale(value: number): void
@@ -81,9 +88,13 @@ module vincent.display {
                     this.cid = 0;
                     this.dispatchEvent(new egret.Event("LOOP"));
                 }
-                this.bmp.texture = this.mat[this.cid];
+                this.render();
                 this.dispatchEventWith("FRAME", false, this.cid);
             }
+        }
+
+        public render(): void {
+            this.bmp.texture = this.mat[this.cid];
         }
 
         private removeTicker(): void
