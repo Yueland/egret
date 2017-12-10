@@ -12,7 +12,4 @@
         let num = current / total;
         let percent = Math.floor(num * 100);
     }
-
-    protected onRemoved() {
-    }
 }

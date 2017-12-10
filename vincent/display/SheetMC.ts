@@ -97,6 +97,20 @@ module vincent.display {
             this.bmp.texture = this.mat[this.cid];
         }
 
+        public dispose(): void {
+            let len = this.mat.length;
+            for (let i = 0; i < len; i++) {
+                try {
+                    if (this.mat[i]) {
+                        this.mat[i].dispose();
+                    }
+                } catch (e) {
+                }
+            }
+            this.mat = [];
+            this.mat = null;
+        }
+
         private removeTicker(): void
         {
             egret.Ticker.getInstance().unregister(this.onTick, this);

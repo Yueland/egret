@@ -1,5 +1,5 @@
 ﻿module v {
-    export class C0 extends CB {
+    export class CB extends vincent.display.CBase {
 
         public constructor() {
             super();

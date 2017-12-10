@@ -3,9 +3,9 @@
     public static isMute = false;
 
     public static chkLocal(): void {
-        let url = window.location.href;
-        if (url.indexOf("localhost") > 0 || url.indexOf("192.168") > 0) {
-            this.isLocal = true;
+        let url = window.location.host;
+        if (url.indexOf("localhost") == 0 || url.indexOf("192.168") == 0) {
+            CTRL.isLocal = true;
         }
     }
 
@@ -13,13 +13,63 @@
         return /^(13[0-9]|14[0-9]|15[0-9]|17[0-9]|18[0-9])\d{8}$/i.test(value);
     }
 
+    public static chkX5(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("MQQBrowser")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static chkAndroid(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("Android")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static chkIOSX(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("iPhone")) {
+            return false;
+        }
+        if (screen.height == 812 && screen.width == 375) {
+            return true;
+        }
+        return false;
+    }
+
+    public static chkIOS(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("iPhone")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static chkWeibo(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("Weibo")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static chkWX(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("MicroMessenger")) {
+            return false;
+        }
+        return true;
+    }
+
     public static chkMobile(): boolean {
-        let boo = true;
         let ua = navigator.userAgent;
         if (-1 == ua.indexOf("iPhone") && -1 == ua.indexOf("iPad") && -1 == ua.indexOf("iPod") && -1 == ua.indexOf("Android")) {
             return false;
         }
-        return boo;
+        return true;
     }
 
     public static playBGM(value: string, autoplay = true, loop = true): void {
@@ -31,8 +81,7 @@
         }
     }
 
-    public static play(value: string, times: number = 1): egret.SoundChannel
-    {
+    public static play(value: string, times: number = 1): egret.SoundChannel {
         if (CTRL.isMute) {
             return;
         }
@@ -58,11 +107,12 @@
     }
 
     public static randomArray(arr: Array<any>): Array<any> {
-        arr.sort(function () { return Math.random() > 0.5 ? -1 : 1; });  
-        return arr;
+        let tmp = arr.slice();
+        tmp.sort(function () { return Math.random() > 0.5 ? -1 : 1; });  
+        return tmp;
     }
 
-    public static createVideo(src: string, loop: boolean = false): HTMLVideoElement {
+    public static createVideo(src: string = "", loop: boolean = false): HTMLVideoElement {
         let vid = <HTMLVideoElement>document.createElement("video");
         vid.preload = "auto";
         vid.id = "vid";
@@ -72,9 +122,7 @@
         vid.setAttribute("webkit-playsinline", "");
         vid.setAttribute("x-webkit-airplay", "allow");
         vid.setAttribute("x5-video-player-type", "h5");
-
-        document.body.appendChild(vid);
-
+        vid.setAttribute("x5-video-player-fullscreen", "true");
         return vid;
     }
 

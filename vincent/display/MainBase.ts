@@ -21,7 +21,8 @@
 
             RES.setMaxLoadingThread(5);
             RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onConfigComplete, this);
-            RES.loadConfig("resource/default.res.json", "resource/");
+            let path = window["resourcePath"] || "";
+            RES.loadConfig(path + "resource/default.res.json?v=" + CONFIG.VERSION, path + "resource/");
 
         }
 
@@ -41,7 +42,6 @@
             {
                 case "loading":
                     RES.addEventListener(RES.ResourceEvent.GROUP_PROGRESS, this.onResourceProgress, this);
-
                     this.loadingView = new LoadingUI();
                     this.addChild(this.loadingView);
 
@@ -61,7 +61,9 @@
 
         protected onResourceProgress(event: RES.ResourceEvent): void {
             if (event.groupName == "preload") {
-                this.loadingView.setProgress(event.itemsLoaded, event.itemsTotal);
+                if (!!this.loadingView) {
+                    this.loadingView.setProgress(event.itemsLoaded, event.itemsTotal);
+                }
             }
         }
 

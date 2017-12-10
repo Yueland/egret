@@ -1,6 +1,10 @@
 class R {
     public static getBMP(value: string, obj?: any): egret.Bitmap {
         let bmp = new egret.Bitmap(RES.getRes(value));
+        if (!bmp) {
+            egret.warn("Underfined Bitmap: " + value);
+            return null;
+        }
         if (obj) {
             if (obj instanceof Array) {
                 bmp.x = obj[0];
@@ -38,6 +42,15 @@ class R {
     public static getTexture(value: string): egret.Texture
     {
         return RES.getRes(value);
+    }
+
+    public static getClass(value: string): any {
+        let n = egret.getDefinitionByName(value);
+        if (!!n) {
+            return n;
+        }
+        egret.warn("Underfined Class: " + value);
+        return null;
     }
 
     public static Base64ToTexture(value:string): egret.Texture
@@ -111,6 +124,16 @@ class R {
         return m;
     }
 
+    public static getGreyMatrix(): number[] {
+        let m = [
+            0.3086, 0.6094, 0.0820, 0, 0,
+            0.3086, 0.6094, 0.0820, 0, 0,
+            0.3086, 0.6094, 0.0820, 0, 0,
+            0, 0, 0, 1, 0
+        ]
+        return m;
+    }
+
     public static getDarkMatrix(value: number): number[] {
         let m = [
             value, 0, 0, 0, 0,
@@ -121,11 +144,27 @@ class R {
         return m;
     }
 
+    public static getTimeFormat(value: number): string {
+        let h = Math.floor(value / 3600000) + "";
+        let m = Math.floor(value / 60000) % 60 + "";
+        let s = Math.floor(value / 1000) % 60 + "";
+        if (h.length < 2) {
+            h = "0" + h;
+        }
+        if (m.length < 2) {
+            m = "0" + m;
+        }
+        if (s.length < 2) {
+            s = "0" + s;
+        }
+        return `${h}:${m}:${s}`;
+    }
+
     public static UploadAccept = {
         IMAGE:"image/png, image/gif, image/jpeg"
     }
 
-    public static Upload(accept: string = "", callback?: Function): void {
+    public static Upload(accept: string = "", callback?: Function): HTMLInputElement {
         let input = <HTMLInputElement>document.getElementById("upload");
         if (input != null) {
             input.click();
@@ -134,11 +173,11 @@ class R {
         input = <HTMLInputElement>document.createElement("input");
         input.id = "upload";
         input.type = "file";
+        input.style.display = "none";
         if (!window["isWX"]) {
             input.accept = "image/*";
         }
         input.onchange = e => {
-            egret.log(e);
             let img = new Image();
             img.onload = e => {
                 let obj = {
@@ -156,5 +195,7 @@ class R {
         }
         document.body.appendChild(input);
         input.click();
+
+        return input;
     }
 }
