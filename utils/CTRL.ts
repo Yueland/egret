@@ -4,9 +4,37 @@
 
     public static chkLocal(): void {
         let url = window.location.host;
-        if (url.indexOf("localhost") == 0 || url.indexOf("192.168") == 0) {
+        if (url.indexOf("localhost") == 0 || url.indexOf("192.168") == 0 || url.indexOf("h5.qq.com") == 0) {
             CTRL.isLocal = true;
         }
+    }
+
+    public static TopDebugger(): void {
+        let div = document.getElementsByTagName("div");
+        for (let i = 0; i < div.length; i++) {
+            if (div[i].style.background == "rgba(0, 0, 0, 0.9)") {
+                div[i].style.zIndex = "99";
+            }
+        }
+    }
+
+    public static hideDebugger(): void {
+        let div = document.getElementsByTagName("div");
+        for (let i = 0; i < div.length; i++) {
+            if (div[i].style.background == "rgba(0, 0, 0, 0.9)") {
+                div[i].style.display = "none";
+            }
+        }
+    }
+
+    public static getVideo(value: string): string {
+        if (window["resourcePath"]) {
+            return window["resourcePath"] + value;
+        }
+        if (CTRL.isLocal) {
+            value = "http://192.168.1.110/2018/bone/" + value;
+        }
+        return value;
     }
 
     public static chkMobileNumber(value: string): boolean {
@@ -16,6 +44,14 @@
     public static chkX5(): boolean {
         let ua = navigator.userAgent;
         if (-1 == ua.indexOf("MQQBrowser")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static chkUC(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("UCBrowser")) {
             return false;
         }
         return true;
@@ -64,6 +100,14 @@
         return true;
     }
 
+    public static chkOPPOBrowser(): boolean {
+        let ua = navigator.userAgent;
+        if (-1 == ua.indexOf("OppoBrowser")) {
+            return false;
+        }
+        return true;
+    }
+
     public static chkMobile(): boolean {
         let ua = navigator.userAgent;
         if (-1 == ua.indexOf("iPhone") && -1 == ua.indexOf("iPad") && -1 == ua.indexOf("iPod") && -1 == ua.indexOf("Android")) {
@@ -81,6 +125,17 @@
         }
     }
 
+    public static playSound(value: string, times: number = 1): HTMLAudioElement {
+        if (CTRL.isMute) {
+            return;
+        }
+        let aud = <HTMLAudioElement>document.getElementById(value);
+        if (!!aud) {
+            aud.play();
+        }
+        return aud;
+    }
+
     public static play(value: string, times: number = 1): egret.SoundChannel {
         if (CTRL.isMute) {
             return;
@@ -89,12 +144,16 @@
         return s.play(0, times);
     }
 
-    public static fadeIn(item: egret.DisplayObject, spd = 500, delay = 0): egret.Tween {
+    public static getLoop(item: egret.DisplayObject): egret.Tween {
+        return egret.Tween.get(item, { loop: true });
+    }
+
+    public static fadeIn(item: egret.DisplayObject, spd = 250, delay = 0): egret.Tween {
         item.alpha = 0;
         return egret.Tween.get(item).wait(delay).to({ alpha: 1 }, spd);
     }
 
-    public static fadeOut(item: egret.DisplayObject, spd = 500, dispose = true): egret.Tween {
+    public static fadeOut(item: egret.DisplayObject, spd = 250, dispose = true): egret.Tween {
         return egret.Tween.get(item).to({ alpha: 0 }, spd).call(() => {
             if (dispose) {
                 item.parent.removeChild(item);
@@ -108,7 +167,7 @@
 
     public static randomArray(arr: Array<any>): Array<any> {
         let tmp = arr.slice();
-        tmp.sort(function () { return Math.random() > 0.5 ? -1 : 1; });  
+        tmp.sort(function () { return Math.random() > 0.5 ? -1 : 1; });
         return tmp;
     }
 
@@ -121,6 +180,11 @@
         vid.setAttribute("playsinline", "");
         vid.setAttribute("webkit-playsinline", "");
         vid.setAttribute("x-webkit-airplay", "allow");
+        return vid;
+    }
+
+    public static createX5Video(src: string = "", loop: boolean = false): HTMLVideoElement {
+        let vid = CTRL.createVideo(src, loop);
         vid.setAttribute("x5-video-player-type", "h5");
         vid.setAttribute("x5-video-player-fullscreen", "true");
         return vid;
@@ -134,7 +198,7 @@
         return null;
     }
 
-    public static getUrlArgs():any {
+    public static getUrlArgs(): any {
         let url = location.href;
         let reMatch;
         if (reMatch = url.match(/\?([^#]+)#?/)) {
@@ -151,10 +215,10 @@
     public static drawArc(g: egret.Graphics, nX: number, nY: number, nRadius: number, nArc: number, nStartingAngle = 0, bRadialLines = false, color = 0xFF0000): void {
         g.clear();
         g.beginFill(color);
-        if(nArc > 360) {
+        if (nArc > 360) {
             nArc = 360;
         }
-		nArc = Math.PI / 180 * nArc;
+        nArc = Math.PI / 180 * nArc;
         let nAngleDelta: number = nArc / 8;
 
         let nCtrlDist: number = nRadius / Math.cos(nAngleDelta / 2);
@@ -170,14 +234,14 @@
         let nStartingX: number = nX + Math.cos(nStartingAngle) * nRadius;
         let nStartingY: number = nY + Math.sin(nStartingAngle) * nRadius;
 
-        if(bRadialLines) {
+        if (bRadialLines) {
             g.moveTo(nX, nY);
             g.lineTo(nStartingX, nStartingY);
         } else {
             g.moveTo(nStartingX, nStartingY);
         }
 
-        for (let i = 0; i< 8; i++) {
+        for (let i = 0; i < 8; i++) {
 
             nAngle += nAngleDelta;
 
@@ -193,5 +257,35 @@
             g.lineTo(nX, nY);
         }
         g.endFill();
+    }
+
+    public static compressImage(img: HTMLImageElement, num = 1048576): string {
+        let width = img.width;
+        let height = img.height;
+
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
+
+        let ratio = width * height / num;
+        if (ratio > 1) {
+            ratio = Math.sqrt(ratio);
+            width /= ratio;
+            height /= ratio;
+        } else {
+            ratio = 1;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let ndata = canvas.toDataURL('image/jpeg');
+        canvas = null;
+        ctx = null;
+        return ndata;
     }
 }

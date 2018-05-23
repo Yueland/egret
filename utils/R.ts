@@ -64,13 +64,22 @@ class R {
         return texture;
     }
 
-    public static getBackSheet(n: string, num: number): egret.Texture[]
+    public static getLoopSheet(n: string, num: number): egret.Texture[]
     {
         let arr = [];
         for (let i = 1; i <= num; i++) {
             let mat = R.getTexture(n + i);
             arr.push(mat);
         }
+        for (let i = num - 1; i > 1; i--) {
+            let mat = R.getTexture(n + i);
+            arr.push(mat);
+        }
+        return arr;
+    }
+
+    public static getBackSheet(n: string, num: number): egret.Texture[] {
+        let arr = [];
         for (let i = num - 1; i > 1; i--) {
             let mat = R.getTexture(n + i);
             arr.push(mat);
@@ -158,6 +167,18 @@ class R {
             s = "0" + s;
         }
         return `${h}:${m}:${s}`;
+    }
+
+    public static createBitmapFromIMG(im: any): egret.Bitmap {
+        let bmp = new egret.Bitmap(R.createTextureFromIMG(im));
+        return bmp;
+    }
+
+    public static createTextureFromIMG(im:any): egret.Texture {
+        let bmd = new egret.BitmapData(im);
+        let texture = new egret.Texture();
+        texture._setBitmapData(bmd);
+        return texture;
     }
 
     public static UploadAccept = {

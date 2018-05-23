@@ -1,5 +1,5 @@
 ﻿class DeviceMotion {
-    private static SHAKE_THRESHOLD = 3000;
+    private static SHAKE_THRESHOLD = 7500;
     private static last_update = 0;
     private static x: number;
     private static y: number;
